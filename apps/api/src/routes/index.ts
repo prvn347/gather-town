@@ -9,7 +9,7 @@ app.get("/ping", (req: Request, res: Response) => {
   res.send("PONG");
 });
 app.use("/admin", adminRoutes);
-app.use("/user", userRoutes);
+app.use("/", userRoutes);
 app.use("/space", spaceRoutes);
 app.use("/avatar", avatarRoutes);
 
