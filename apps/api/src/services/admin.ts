@@ -1,6 +1,6 @@
 import { map } from "zod";
 import prisma from "../prismaClient";
-import { avatarType, elementDataType, mapType } from "@repo/types/src/admin";
+import { avatarType, elementDataType, mapType } from "@repo/types/dist/admin";
 
 export class adminServices {
   async addElement(elementMeta: elementDataType) {
@@ -10,7 +10,7 @@ export class adminServices {
           imageUrl: elementMeta.imageUrl,
           height: elementMeta.height,
           width: elementMeta.width,
-          name: elementMeta.name,
+          static: elementMeta.static,
         },
       });
       return element.id;
@@ -19,14 +19,14 @@ export class adminServices {
       throw new Error("error while adding data");
     }
   }
-  async updateElement(elementId: string, imageUrl: string) {
+  async updateElement(elementId: string, imageMeta: { imageUrl: string }) {
     try {
       const element = await prisma.element.update({
         where: {
           id: elementId,
         },
         data: {
-          imageUrl: imageUrl,
+          imageUrl: imageMeta.imageUrl,
         },
       });
       return element;
@@ -44,7 +44,7 @@ export class adminServices {
           imageUrl: avatarMeta.imageUrl,
         },
       });
-      return avatar;
+      return avatar.id;
     } catch (error) {
       console.error(error);
       throw new Error("error while adding data");
@@ -56,9 +56,9 @@ export class adminServices {
 
       const map = await prisma.map.create({
         data: {
-          width: mapData.width,
-          height: mapData.height,
-          backgroundImagePath: mapData.backgroudImagePath,
+          thumbnail: mapData.thumbnail,
+          height: parseInt(mapData.dimensions.split("x")[1] || ""),
+          width: parseInt(mapData.dimensions.split("x")[0] || ""),
           name: mapData.name,
         },
       });

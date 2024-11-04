@@ -1,8 +1,8 @@
 export type elementDataType = {
-  name: string;
   imageUrl: string;
   width: number;
   height: number;
+  static: boolean;
 };
 
 export type avatarType = {
@@ -11,9 +11,8 @@ export type avatarType = {
 };
 
 export type mapType = {
-  width: number;
-  height: number;
-  backgroudImagePath: string;
+  thumbnail: string;
+  dimensions: string;
   name: string;
   defaultElements: Array<defaultElements>;
 };

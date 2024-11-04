@@ -2,17 +2,21 @@ import { string, z } from "zod";
 
 export type userMeta = {
   password: string;
-  name: string;
-  email: string;
+  username: string;
+  type: "admin" | "user";
+};
+export type signinUserMeta = {
+  username: string;
+  password: string;
 };
 
 export const userSignupSchema = z.object({
-  name: z.string(),
-  password: z.string().min(8),
-  email: z.string().email(),
+  type: z.string(),
+  password: z.string().min(5),
+  username: z.string(),
 });
 
 export const userSigninSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  username: z.string(),
+  password: z.string().min(5),
 });

@@ -3,28 +3,42 @@ import prisma from "../prismaClient";
 export class avatarServices {
   async getAllAvatars() {
     try {
-      const avatars = await prisma.avatar.findMany();
+      const metadata = await prisma.avatar.findMany();
 
-      return avatars;
+      // metadata.map((m) => ({
+      //   userId: m.id,
+      //   avatarId: m.avatar?.imageUrl,
+      // }));
+
+      return metadata;
     } catch (error) {
       throw new Error("error while getting all avatars");
     }
   }
-  async getAvatars(avatarIds: Array<string>) {
+  async getAvatars(userIds: Array<string>) {
     try {
-      console.log(avatarIds + typeof avatarIds);
-      const avatars = await prisma.avatar.findMany({
+      console.log(userIds);
+      const metadata = await prisma.user.findMany({
         where: {
           id: {
-            in: avatarIds,
+            in: userIds,
           },
         },
+        select: {
+          avatar: true,
+          id: true,
+        },
       });
-      if (!avatars) {
-        return "avatar doesn't exist";
-      }
+      const avatars = metadata.map((m) => ({
+        userId: m.id,
+        avatarId: m.avatar?.imageUrl,
+      }));
 
-      return avatars;
+      console.log(avatars.length);
+      return metadata.map((m) => ({
+        userId: m.id,
+        avatarId: m.avatar?.imageUrl,
+      }));
     } catch (error) {
       console.error(error);
       throw new Error("error while getting user avatars");

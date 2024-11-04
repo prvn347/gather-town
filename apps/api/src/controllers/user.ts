@@ -1,5 +1,5 @@
 import { userServices } from "../services/user";
-import { userMeta } from "@repo/types/src/user";
+import { signinUserMeta, userMeta } from "@repo/types/dist/user";
 import { userInputParserVarifier } from "../utils/userInputParser";
 
 export class userControllers {
@@ -16,7 +16,7 @@ export class userControllers {
     }
   }
 
-  async findUser(userData: userMeta) {
+  async findUser(userData: signinUserMeta) {
     try {
       userInputParserVarifier.validateUserSigninInput(userData);
       return await this.userService.findUser(userData);
@@ -24,9 +24,9 @@ export class userControllers {
       return new Error("error while creating user.");
     }
   }
-  async selectAvatar(userId: string, avatarId: string) {
+  async selectAvatar(userId: string, avatarMeta: { avatarId: string }) {
     try {
-      return await this.userService.selectAvatar(avatarId, userId);
+      return await this.userService.selectAvatar(avatarMeta, userId);
     } catch (error) {
       return new Error("error while updating user's avatar.");
     }

@@ -1,6 +1,5 @@
-// prismaClient.ts
-import { PrismaClient } from "@prisma/client";
+import { ps } from "@repo/db/client";
 
-const prisma = new PrismaClient();
+const prisma = ps;
 
 export default prisma;

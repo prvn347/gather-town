@@ -7,7 +7,7 @@ export interface AuthRequest extends Request {
   user?: JwtPayload;
 }
 
-export const admin: RequestHandler = (
+export const user: RequestHandler = (
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -24,10 +24,8 @@ export const admin: RequestHandler = (
 
   try {
     const payload = verifyToken(token) as JwtPayload;
-    if (payload.role !== "Admin") {
-      res.status(403).json({ message: "Unauthorized" });
-      return;
-    }
+
+    console.log(payload);
     req.user = payload;
     next();
   } catch (error) {

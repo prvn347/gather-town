@@ -1,6 +1,7 @@
 import z, { ZodError, nullable, number, optional } from "zod";
 
 import {
+  signinUserMeta,
   userMeta,
   userSigninSchema,
   userSignupSchema,
@@ -21,7 +22,7 @@ export class userInputParserVarifier {
     }
   }
 
-  static validateUserSigninInput(input: userMeta) {
+  static validateUserSigninInput(input: signinUserMeta) {
     try {
       userSigninSchema.parse(input);
     } catch (error) {

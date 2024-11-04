@@ -1,7 +1,8 @@
 import prisma from "../prismaClient";
 import bcrypt from "bcryptjs";
-import { userMeta } from "@repo/types/src/user";
+import { signinUserMeta, userMeta } from "@repo/types/dist/user";
 import { generateToken } from "../utils/jwtUtils";
+import e from "express";
 
 //TODO:make singleton of prisma
 
@@ -11,25 +12,25 @@ export class userServices {
       const hashedPassword = await bcrypt.hashSync(userMeta.password, 10);
       const user = await prisma.user.create({
         data: {
-          name: userMeta.name,
           password: hashedPassword,
-          email: userMeta.email,
-          role: "User",
+          username: userMeta.username,
+          role: userMeta.type === "admin" ? "Admin" : "User",
         },
       });
-
-      const token = generateToken(user.id);
+      const userId = user.id;
+      const role = user.role;
+      const token = generateToken({ userId, role });
 
       return { user, token };
     } catch (error) {
       return new Error("error while db user creation");
     }
   }
-  async findUser(userMeta: userMeta) {
+  async findUser(userMeta: signinUserMeta) {
     try {
       const user = await prisma.user.findFirst({
         where: {
-          email: userMeta.email,
+          username: userMeta.username,
         },
       });
       if (!user) {
@@ -42,8 +43,10 @@ export class userServices {
       if (!isValidPassword) {
         throw new Error("wrong password");
       }
+      const userId = user.id;
+      const role = user.role;
       if (isValidPassword) {
-        const token = generateToken(user.id);
+        const token = generateToken({ userId, role });
         return { user, token };
       }
     } catch (error) {
@@ -51,19 +54,25 @@ export class userServices {
     }
   }
 
-  async selectAvatar(avatarId: string, userId: string) {
+  async selectAvatar(avatarMeta: { avatarId: string }, userId: string) {
     try {
-      const avatar = await prisma.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          avatarId: avatarId,
-        },
+      const avatarExists = await prisma.avatar.findUnique({
+        where: { id: avatarMeta.avatarId },
       });
+
+      if (!avatarExists) {
+        throw new Error("Invalid avatar ID");
+      }
+
+      const avatar = await prisma.user.update({
+        where: { id: userId },
+        data: { avatarId: avatarMeta.avatarId },
+      });
+
       return avatar;
     } catch (error) {
-      throw new Error("error while updating avatar");
+      console.error(error);
+      throw new Error("Error while updating avatar");
     }
   }
 }

@@ -1,15 +1,10 @@
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('Admin', 'User');
 
--- CreateEnum
-CREATE TYPE "SpaceRole" AS ENUM ('OWNER', 'GENERAL_MEMBER', 'GUEST');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "emailVarified" BOOLEAN NOT NULL DEFAULT false,
+    "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "avatarId" TEXT,
     "role" "Role" NOT NULL,
@@ -18,37 +13,26 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
-CREATE TABLE "UserSpace" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "spaceId" TEXT NOT NULL,
-    "role" "SpaceRole" NOT NULL,
-
-    CONSTRAINT "UserSpace_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Space" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "width" INTEGER NOT NULL,
-    "height" INTEGER,
-    "currentUserRole" "SpaceRole" NOT NULL,
-    "backgroundImagePath" TEXT,
+    "height" INTEGER NOT NULL,
     "thumbnail" TEXT,
+    "creatorId" TEXT NOT NULL,
 
     CONSTRAINT "Space_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "SpaceElement" (
+CREATE TABLE "spaceElements" (
     "id" TEXT NOT NULL,
     "elementId" TEXT NOT NULL,
     "spaceId" TEXT NOT NULL,
     "x" INTEGER NOT NULL,
     "y" INTEGER NOT NULL,
 
-    CONSTRAINT "SpaceElement_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "spaceElements_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -56,7 +40,7 @@ CREATE TABLE "Element" (
     "id" TEXT NOT NULL,
     "width" INTEGER NOT NULL,
     "height" INTEGER NOT NULL,
-    "name" TEXT NOT NULL,
+    "static" BOOLEAN NOT NULL,
     "imageUrl" TEXT NOT NULL,
 
     CONSTRAINT "Element_pkey" PRIMARY KEY ("id")
@@ -67,21 +51,21 @@ CREATE TABLE "Map" (
     "id" TEXT NOT NULL,
     "width" INTEGER NOT NULL,
     "height" INTEGER NOT NULL,
-    "backgroundImagePath" TEXT,
     "name" TEXT NOT NULL,
+    "thumbnail" TEXT NOT NULL,
 
     CONSTRAINT "Map_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "mapElements" (
+CREATE TABLE "MapElements" (
     "id" TEXT NOT NULL,
     "mapId" TEXT NOT NULL,
-    "elementId" TEXT,
+    "elementId" TEXT NOT NULL,
     "x" INTEGER,
     "y" INTEGER,
 
-    CONSTRAINT "mapElements_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "MapElements_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -97,22 +81,13 @@ CREATE TABLE "Avatar" (
 CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_password_key" ON "User"("password");
-
--- CreateIndex
-CREATE UNIQUE INDEX "UserSpace_userId_spaceId_key" ON "UserSpace"("userId", "spaceId");
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Space_id_key" ON "Space"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SpaceElement_id_key" ON "SpaceElement"("id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "SpaceElement_elementId_spaceId_key" ON "SpaceElement"("elementId", "spaceId");
+CREATE UNIQUE INDEX "spaceElements_id_key" ON "spaceElements"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Element_id_key" ON "Element"("id");
@@ -121,7 +96,7 @@ CREATE UNIQUE INDEX "Element_id_key" ON "Element"("id");
 CREATE UNIQUE INDEX "Map_id_key" ON "Map"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "mapElements_id_key" ON "mapElements"("id");
+CREATE UNIQUE INDEX "MapElements_id_key" ON "MapElements"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Avatar_id_key" ON "Avatar"("id");
@@ -130,13 +105,16 @@ CREATE UNIQUE INDEX "Avatar_id_key" ON "Avatar"("id");
 ALTER TABLE "User" ADD CONSTRAINT "User_avatarId_fkey" FOREIGN KEY ("avatarId") REFERENCES "Avatar"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserSpace" ADD CONSTRAINT "UserSpace_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Space" ADD CONSTRAINT "Space_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserSpace" ADD CONSTRAINT "UserSpace_spaceId_fkey" FOREIGN KEY ("spaceId") REFERENCES "Space"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "spaceElements" ADD CONSTRAINT "spaceElements_spaceId_fkey" FOREIGN KEY ("spaceId") REFERENCES "Space"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SpaceElement" ADD CONSTRAINT "SpaceElement_spaceId_fkey" FOREIGN KEY ("spaceId") REFERENCES "Space"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "spaceElements" ADD CONSTRAINT "spaceElements_elementId_fkey" FOREIGN KEY ("elementId") REFERENCES "Element"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SpaceElement" ADD CONSTRAINT "SpaceElement_elementId_fkey" FOREIGN KEY ("elementId") REFERENCES "Element"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "MapElements" ADD CONSTRAINT "MapElements_mapId_fkey" FOREIGN KEY ("mapId") REFERENCES "Map"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MapElements" ADD CONSTRAINT "MapElements_elementId_fkey" FOREIGN KEY ("elementId") REFERENCES "Element"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,6 +1,6 @@
 import prisma from "../prismaClient";
 import { adminServices } from "../services/admin";
-import { avatarType, elementDataType, mapType } from "@repo/types/src/admin";
+import { avatarType, elementDataType, mapType } from "@repo/types/dist/admin";
 
 export class adminControllers {
   private adminService;
@@ -14,9 +14,9 @@ export class adminControllers {
       return new Error("unable to get data from admin service");
     }
   }
-  async updateElement(elementId: string, imageUrl: string) {
+  async updateElement(elementId: string, imageMeta: { imageUrl: string }) {
     try {
-      return await this.adminService.updateElement(elementId, imageUrl);
+      return await this.adminService.updateElement(elementId, imageMeta);
     } catch (error) {
       return new Error("unable to get dta from service ");
     }

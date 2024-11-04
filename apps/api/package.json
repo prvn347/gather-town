@@ -14,6 +14,7 @@
   "dependencies": {
     "@prisma/client": "^5.21.1",
     "@types/express": "^5.0.0",
+    "@repo/db": "*",
     "@repo/types": "*",
     "bcryptjs": "^2.4.3",
     "cookie": "^1.0.1",
