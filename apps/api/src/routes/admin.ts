@@ -36,6 +36,19 @@ router.post("/avatar", async (req: Request, res: Response) => {
     res.status(403).json(error);
   }
 });
+router.post("/element", async (req: Request, res: Response) => {
+  try {
+    const result = await adminController.addElement(req.body);
+
+    if (result instanceof Error) {
+      res.status(500).json({ msg: "error in element creation" });
+      return;
+    }
+    res.status(200).json({ id: result });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
 router.put("/element/:elementId", async (req: Request, res: Response) => {
   try {
     const elementId = req.params.elementId as string;
@@ -50,17 +63,5 @@ router.put("/element/:elementId", async (req: Request, res: Response) => {
     res.status(403).json(error);
   }
 });
-router.post("/element", async (req: Request, res: Response) => {
-  try {
-    const result = await adminController.addElement(req.body);
 
-    if (result instanceof Error) {
-      res.status(500).json({ msg: "error in element creation" });
-      return;
-    }
-    res.status(200).json({ id: result });
-  } catch (error) {
-    res.status(400).json(error);
-  }
-});
 export default router;

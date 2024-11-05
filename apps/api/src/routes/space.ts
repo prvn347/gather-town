@@ -27,27 +27,7 @@ router.post("/", async (req: AuthRequest, res: Response): Promise<any> => {
     });
   }
 });
-router.delete("/:id", async (req: AuthRequest, res: Response): Promise<any> => {
-  try {
-    const spaceId = req.params.id as string;
 
-    const user = req.user as { userId: string };
-    console.log(spaceId + "and " + user);
-    const result = await spaceController.deleteSpace(spaceId, user.userId);
-
-    if (result instanceof Error) {
-      return res.status(400).json({
-        msg: "space does not exist",
-      });
-    }
-    if (result === "unautherized") {
-      return res.status(403).json(" You don't have permissiono to delete ");
-    }
-    return res.status(200).json(result);
-  } catch (error) {
-    res.status(400).json(error);
-  }
-});
 router.get("/all", async (req: Request, res: Response) => {
   try {
     const result = await spaceController.getAllSpaces();
@@ -91,6 +71,27 @@ router.post("/element", async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({
         msg: "error occured while adding ",
       });
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+router.delete("/:id", async (req: AuthRequest, res: Response): Promise<any> => {
+  try {
+    const spaceId = req.params.id as string;
+
+    const user = req.user as { userId: string };
+    console.log(spaceId + "and " + user);
+    const result = await spaceController.deleteSpace(spaceId, user.userId);
+
+    if (result instanceof Error) {
+      return res.status(400).json({
+        msg: "space does not exist",
+      });
+    }
+    if (result === "unautherized") {
+      return res.status(403).json(" You don't have permissiono to delete ");
     }
     return res.status(200).json(result);
   } catch (error) {

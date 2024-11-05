@@ -6,16 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node dist/index.js",
-    "build": "npx tsc -b"
+    "build": "npx esbuild src/index.ts --bundle --outfile=dist/index.js --platform=node --tsconfig=tsconfig.json"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.21.1",
-    "@types/express": "^5.0.0",
     "@repo/db": "*",
     "@repo/types": "*",
+    "@types/express": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "cookie": "^1.0.1",
     "cors": "^2.8.5",
