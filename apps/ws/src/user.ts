@@ -88,17 +88,18 @@ export class User {
   }
 
   public broadcastMovement(payload: movementPayload) {
+    console.log("move ment are " + JSON.stringify(payload));
     const moveX = payload.x;
     const moveY = payload.y;
 
-    (this.x = moveX), (this.y = moveY);
-    const xDisplacement = this.x - moveX;
-    const yDisplacement = this.y - moveY;
+    const xDisplacement = Math.abs(this.x! - moveX);
+    const yDisplacement = Math.abs(this.y! - moveY);
 
     if (
       (xDisplacement == 0 && yDisplacement == 1) ||
       (xDisplacement == 1 && yDisplacement == 0)
     ) {
+      (this.x = moveX), (this.y = moveY);
       const message = JSON.stringify({
         type: "movement",
         payload: {

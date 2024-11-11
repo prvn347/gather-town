@@ -5,11 +5,11 @@ const wss = new WebSocketServer({ port: 8080 });
 
 wss.on("connection", function connection(ws) {
   const user = new User(ws);
-  ws.send("hello");
+  // ws.send("hello");
   ws.on("error", console.error);
 
   ws.on("close", (e) => {
-    user == null;
+    user.leaveRoom();
   });
 });
 
